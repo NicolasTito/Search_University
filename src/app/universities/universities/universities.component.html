@@ -1,0 +1,42 @@
+<mat-card>
+  <table mat-table [dataSource]="universities" multiTemplateDataRows class="mat-elevation-z8">
+
+    <!-- Header table-->
+    <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplay">
+      <th mat-header-cell *matHeaderCellDef>
+        <div>{{column}}</div>
+
+        <!-- Select Country-->
+        <mat-form-field appearance="outline">
+          <mat-label>Choose the country</mat-label>
+          <mat-select [formControl]="countryControl" required>
+            <mat-option>--</mat-option>
+            <mat-option *ngFor="let options of options" [value]="options" (click)="onSearch()">
+              {{options.name}}
+            </mat-option>
+            <mat-hint>{{countryControl.value?.sound}}</mat-hint>
+          </mat-select>
+        </mat-form-field>
+      </th>
+      <td mat-cell *matCellDef="let university"> {{university[column]}} </td>
+    </ng-container>
+
+    <!-- Expanded Content Column -->
+    <ng-container matColumnDef="expandedDetail">
+      <td mat-cell *matCellDef="let university" [attr.colspan]="columnsToDisplay.length">
+        <div class="university-detail" [@detailExpand]="university == expandedUniversity ? 'expanded' : 'collapsed'">
+          <mat-list role="list" *ngFor="let page of university.web_pages">
+            <mat-list-item role="listitem"> <a href="{{page}}"> {{page}} </a> </mat-list-item>
+          </mat-list>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    <tr mat-row *matRowDef="let university; columns: columnsToDisplay;" class="university-row"
+      [class.expanded-row]="expandedUniversity === university"
+      (click)="expandedUniversity = expandedUniversity === university ? null : university">
+    </tr>
+    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+  </table>
+</mat-card>
